@@ -180,22 +180,31 @@ jobs:
 
   configure-infrastructure:
     docker:
-      # Docker image here that supports Ansible
+      - image: python:3.9.16-alpine3.17 # Docker image here that supports Ansible
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - checkout # Checkout code from git
+      - add_ssh_keys: # Add ssh keys with fingerprint
+          finger_prints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
+      
+      - attach_workspace: # attach workspace
+          at: ~/project/.circleci/ansible/inventory.txt
+      
       - run:
           name: Install dependencies
           command: |
             # Your code here
-            exit 1
+            
+            apk add --update ansible
+
+            #exit 1
       - run:
           name: Configure server
           command: |
             # Your code here
-            exit 1
-      # Here's where you will add some code to rollback on failure      
+            ansible-playbook --user=ubuntu -vvvv -i ~/project/.circleci/ansible/inventory.txt
+            
+            #exit 1
+      - destroy-environment # Here's where you will add some code to rollback on failure      
 
   run-migrations:
     docker:
