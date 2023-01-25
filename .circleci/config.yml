@@ -138,12 +138,13 @@ jobs:
       - image: amazon/aws-cli # Docker image here that supports AWS CLI
     steps:
       - checkout # Checkout code from git
+      - run: install tar and gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=CICD-Backend \
+              --tags project=cicd-backend \
               --stack-name samnzay-stack-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID= backend-${CIRCLE_WORKFLOW_ID:0:7} 
               --region us-east-1
@@ -154,7 +155,7 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=CICD-Frontend \
+              --tags project=cicd-frontend \
               --stack-name samnzay-stack-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID= frontend-${CIRCLE_WORKFLOW_ID:0:7}  
               --region us-east-1
@@ -164,8 +165,8 @@ jobs:
           name: Add back-end "IP" to ansible inventory
           command: |
             # Your code here
-            echo "[web-hosts]" > inventory.txt
-            aws ec2 describe-instances --filters project=CICD-Backend \
+            #echo "[web]" > inventory.txt
+            aws ec2 describe-instances --filters project=cicd-backend \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory.txt
 
@@ -194,7 +195,7 @@ jobs:
           command: |
             # Your code here
             
-            apk add --update ansible
+            apk add --update tar gzip awscli ansible
 
             #exit 1
       - run:
@@ -208,9 +209,9 @@ jobs:
 
   run-migrations:
     docker:
-      # Docker image here that supports NodeJS
+      - image: circleci/node:13.8.0 # Docker image here that supports NodeJS
     steps:
-      # Checkout code from git
+      - checkout # Checkout code from git
       - run:
           name: Run migrations
           command: |

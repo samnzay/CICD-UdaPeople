@@ -6,10 +6,6 @@ Parameters:
     Description: Unique identifier.
     Type: String
 
-  AMIToUse:
-    Description: AMI To use for EC2 Instance | Ubuntu_18-LTS AMI_Id
-    Type: String 
-
 Resources:
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -35,7 +31,7 @@ Resources:
       KeyName: CI-CD-Udacity # If you use another key pair name, you should change this value to match.
       # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
       # Ubuntu 18 or higher works fine
-      ImageId: !Ref AMIToUse
+      ImageId: ami-061dbd1209944525c
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
