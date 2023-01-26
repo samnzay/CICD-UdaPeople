@@ -237,7 +237,7 @@ jobs:
             fi
 
             #exit 1
-     # Here's where you will add some code to rollback on failure
+      # Here's where you will add some code to rollback on failure
       - destroy-environment
 
   deploy-frontend:
@@ -278,34 +278,59 @@ jobs:
                     
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
+      - image: python:3.9.16-alpine3.17 # Docker image here that supports Ansible
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
+      - checkout # Checkout code from git
+      - add_ssh_keys: # Add ssh keys with fingerprint 
+          fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
+      
       # attach workspace
+      - attach_workspace: # attach workspace
+          at: ~/
       - run:
           name: Install dependencies
           command: |
             # your code here
+            apk add --update ansible tar gzip nodejs npm
+            /usr/local/bin/python -m pip install --upgrade pip
+            pip install awscli
+            
       - run:
           name: Deploy backend
           command: |
             # your code here
-      # Here's where you will add some code to rollback on failure  
+
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is ------: "
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+
+      - destroy-environment # Here's where you will add some code to rollback on failure  
 
   smoke-test:
     docker:
-      # Lightweight Docker image 
+      - image: python:3.10-alpine3.16 # Lightweight Docker image 
     steps:
-      # Checkout code from git
+      - checkout # Checkout code from git
       - run:
           name: Install dependencies
           command: |
             # your code here
+            apk add --update ansible tar gzip curl aws-cli nodejs npm
       - run:
           name: Get backend url
           command: |
             # your code here
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text)
       - run:
           name: Backend smoke test.
           command: |
