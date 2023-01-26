@@ -136,7 +136,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
-            exit 1
+            #exit 1
             
 
   scan-backend:
