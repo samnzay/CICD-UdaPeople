@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs: 
-  node: circleci/node@5.0.2
-
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -19,7 +16,7 @@ commands:
             # Your code here
 
             echo "Destroying environment: << parameters.workflow_id >> "
-            cloudformation delete-stack --stackname samnzay-stack-backend-${CIRCLE_WORKFLOW_ID:0:7}
+            cloudformation delete-stack --stackname samnzay-stack-backend-<< parameters.workflow_id >>
             aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name samnzay-stack-frontend-<< parameters.workflow_id >>
 
@@ -28,23 +25,24 @@ commands:
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      # Add parameter here  
-      parameters:
+      parameters: # Add parameter here 
         workflow_id:
             type: string
     steps:
       - run:
           name: Revert migrations
-          # Add when this will run
+          
+          when: on_fail # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS = $(curl --insecure  https://kvdb.io/CABr8rm7FqeskeNbCghtvC/cicd-db-migration-<< parameters.workflow_id >>)
             if(( $SUCCESS==1 )); 
             then
-            #  cd ~/project/backend
-            #  npm install
+                cd ~/project/backend
+                npm install
             #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+                npm run migration:revert
+            #exit 1
             fi
             
 jobs:
@@ -189,8 +187,8 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
 
-      - destroy-environment # Here's where you will add some code to rollback on failure
-      
+      - destroy-environment: # Here's where you will add some code to rollback on failure
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   configure-infrastructure:
     docker:
@@ -219,7 +217,8 @@ jobs:
             ansible-playbook --user=ubuntu -vvvv -i inventory.txt configure-server.yml 
             
             #exit 1
-      - destroy-environment # Here's where you will add some code to rollback on failure      
+      - destroy-environment: # Here's where you will add some code to rollback on failure      
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   run-migrations:
     docker:
@@ -237,7 +236,7 @@ jobs:
 
             npm run migrations > migrations_dump.txt
       - run:
-          name: Send migration results to memstash
+          name: Send migration results to kvdb
           command: |
             # Your code here
 
@@ -245,25 +244,28 @@ jobs:
             then
               
                 # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
-                curl https://kvdb.io/CABr8rm7FqeskeNbCghtvC/cicd-db-migration_$\{CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
+                curl https://kvdb.io/CABr8rm7FqeskeNbCghtvC/cicd-db-migration-$\{CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
             
             fi
 
             #exit 1
       # Here's where you will add some code to rollback on failure
-      - destroy-environment
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   deploy-frontend:
     docker:
       - image: amazon/aws-cli # Docker image here that supports AWS CLI
     steps:
       - checkout # Checkout code from git
+
+      - restore_cache:
+          keys: [build-frontend]
       - run:
           name: Install dependencies
           command: |
             # your code here
-            cd frontend
-            npm install
+            apt install tar gzip ansible npm
             
       - run:
           name: Get backend url
@@ -287,8 +289,10 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             
-      - destroy-environment # Here's where you will add some code to rollback on failure      
-                    
+      - destroy-environment: # Here's where you will add some code to rollback on failure      
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+
   deploy-backend:
     docker:
       - image: python:3.9.16-alpine3.17 # Docker image here that supports Ansible
@@ -324,7 +328,8 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
 
-      - destroy-environment # Here's where you will add some code to rollback on failure  
+      - destroy-environment: # Here's where you will add some code to rollback on failure  
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
@@ -348,9 +353,16 @@ jobs:
           name: Backend smoke test.
           command: |
             # your code here
-            BACKEND-URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
-            echo ${BACKEND-URL} 
-            if curl -s ${BACKEND-URL} | grep "Welcome"
+
+            export BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text)  
+
+            echo ${BACKEND-IP}
+            export API_URL = "http://${BACKEND_IP}:3030"
+
+            if curl -s ${API_URL}/api/status" | grep "ok"
             then
                 # Change this to 0 after the job fails
               return 0
@@ -373,7 +385,8 @@ jobs:
             fi
       # Here's where you will add some code to rollback on failure  
 
-      - destroy-environment
+      - destroy-environment:
+        workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   cloudfront-update:
     docker:
