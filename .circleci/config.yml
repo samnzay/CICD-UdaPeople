@@ -451,16 +451,22 @@ cleanup:
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            # You can use any condition like:
+            # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+            # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
+            # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
+            
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
             then
               # your code here
-                echo "Getting Blue Deployments Destroyed..."
 
                 aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
                 aws cloudformation delete-stack --stack-name "samnzay-stack-frontend-${OldWorkflowID}"
                 aws cloudformation delete-stack --stack-name "samnzay-stack-backend-${OldWorkflowID}"
+
+                echo "Delete Blue Deployments Confirmed..."
             else
-                echo "No blue deployment available"
+                echo "......Can Not Clean deployments...."
             fi
 
 
