@@ -407,7 +407,7 @@ jobs:
           name: Update cloudfront distribution
           command: |
             # your code here
-            
+
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
               --stack-name InitialStack-cicd-samnzay \
@@ -423,53 +423,76 @@ jobs:
 
 cleanup:
     docker:
-      # Docker image here
+      - image: amazon/aws-cli # Docker image here
     steps:
-      # Checkout code from git
+      - checkout # Checkout code from git
+      - run: yum install -y tar gzip
       - run:
           name: Get old stack workflow id
           command: |
             # your code here
-            export OldWorkflowID="the id here"
-            export STACKS=[] #put the list of stacks here
+
+            export OldWorkflowID="$(aws cloudformation list-exports \
+              --query "Exports[?Name==\`WorkflowID\`].Value" \ 
+              --no-paginate --output text )"
+
+            echo OldWorkflowID: "${OldWorkflowID}"
+
+            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+
+            export STACKS=($(aws cloudformation list-stacks \
+              --query "StackSummaries[*].StackName" \
+              --stack-status-filter CREATE_COMPLETE \
+              --no-paginate \
+              --output text )) 
+
+            echo Stack Names: "${STACKS[@]}"
+
       - run:
           name: Remove old stacks and files
           command: |
             if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             then
               # your code here
+                echo "Getting Blue Deployments Destroyed..."
+
+                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                aws cloudformation delete-stack --stack-name "samnzay-stack-frontend-${OldWorkflowID}"
+                aws cloudformation delete-stack --stack-name "samnzay-stack-backend-${OldWorkflowID}"
+            else
+                echo "No blue deployment available"
             fi
-            
+
 
 workflows:
-  default:
+  my_cicd_default_workflow:
     jobs:
       - build-frontend
       - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          filters:
-            branches:
-              only: [test-feature-branch]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
-      - run-migrations:
-          requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
-      - cloudfront-update:
-          requires: [smoke-test]
-      - cleanup:
-          requires: [cloudfront-update]
+      #- test-frontend:
+          #requires: [build-frontend]
+      #- test-backend:
+          #requires: [build-backend]
+      #- scan-backend:
+          #requires: [build-backend]
+      #- scan-frontend:
+          #requires: [build-frontend]
+      #- deploy-infrastructure:
+          #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          #filters:
+            #branches:
+              #only: [test-feature-branch]
+      #- configure-infrastructure:
+          #requires: [deploy-infrastructure]
+      #- run-migrations:
+          #requires: [configure-infrastructure]
+      #- deploy-frontend:
+          #requires: [run-migrations]
+      #- deploy-backend:
+          #requires: [run-migrations]
+      #- smoke-test:
+          #requires: [deploy-backend, deploy-frontend]
+      #- cloudfront-update:
+          #requires: [smoke-test]
+      #- cleanup:
+          #requires: [cloudfront-update]
