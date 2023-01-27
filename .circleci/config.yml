@@ -284,7 +284,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
-            npm audit fix
+            npm audit fix --force
 
             # Run and save the migration output
 
