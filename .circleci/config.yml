@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  slack: circleci/slack@4.10.1
-  node: circleci/node@5.0.2
+  slack: circleci/slack@4.12.1
+  node: circleci/node@4.1
 
 commands:
   destroy-environment:
@@ -64,6 +64,7 @@ jobs:
             cd frontend
             npm install
             npm run build
+            exit 1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -434,53 +435,67 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
 
-cleanup:
-    docker:
-      - image: amazon/aws-cli # Docker image here
-    steps:
-      - checkout # Checkout code from git
-      - run: yum install -y tar gzip
-      - run:
-          name: Get old stack workflow id
-          command: |
-            # your code here
-
-            export OldWorkflowID="$(aws cloudformation list-exports \
-              --query "Exports[?Name==\`WorkflowID\`].Value" \ 
-              --no-paginate --output text )"
-
-            echo OldWorkflowID: "${OldWorkflowID}"
-
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
-
-            export STACKS=($(aws cloudformation list-stacks \
-              --query "StackSummaries[*].StackName" \
-              --stack-status-filter CREATE_COMPLETE \
-              --no-paginate \
-              --output text )) 
-
-            echo Stack Names: "${STACKS[@]}"
-
-      - run:
-          name: Remove old stacks and files
-          command: |
-            # You can use any condition like:
-            # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-            # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
-            # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
-            
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
-            then
+  cleanup:
+      docker:
+        - image: amazon/aws-cli # Docker image here
+      steps:
+        - checkout # Checkout code from git
+        - run: yum install -y tar gzip
+        - run:
+            name: Get old stack workflow id
+            command: |
               # your code here
 
-                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-                aws cloudformation delete-stack --stack-name "samnzay-stack-frontend-${OldWorkflowID}"
-                aws cloudformation delete-stack --stack-name "samnzay-stack-backend-${OldWorkflowID}"
+              export OldWorkflowID="$(aws cloudformation list-exports \
+                --query "Exports[?Name==\`WorkflowID\`].Value" \ 
+                --no-paginate --output text )"
 
-                echo "Delete Blue Deployments Confirmed..."
-            else
-                echo "......Can Not Clean deployments...."
-            fi
+              echo OldWorkflowID: "${OldWorkflowID}"
+
+              echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
+
+              export STACKS=($(aws cloudformation list-stacks \
+                --query "StackSummaries[*].StackName" \
+                --stack-status-filter CREATE_COMPLETE \
+                --no-paginate \
+                --output text )) 
+
+              echo Stack Names: "${STACKS[@]}"
+
+        - run:
+            name: Remove old stacks and files
+            command: |
+              # You can use any condition like:
+              # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+              # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
+              # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
+              
+              if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
+              then
+                # your code here
+
+                  aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                  aws cloudformation delete-stack --stack-name "samnzay-stack-frontend-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "samnzay-stack-backend-${OldWorkflowID}"
+
+                  echo "Delete Blue Deployments Confirmed..."
+              else
+                  echo "......Can Not Clean deployments...."
+              fi
+
+  deploy:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run: 
+          command: npm run deploy 
+      - slack/notify: 
+          channel: C04KNV5EBKN
+          event: fail
+          template: basic_fail_1
+
 
 
 workflows:
@@ -515,3 +530,4 @@ workflows:
           #requires: [smoke-test]
       #- cleanup:
           #requires: [cloudfront-update]
+      - deploy
