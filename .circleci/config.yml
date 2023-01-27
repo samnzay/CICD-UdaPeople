@@ -48,6 +48,14 @@ commands:
                 npm run migration:revert
             #exit 1
             fi
+
+  slacknotify:
+    description: failed job notification
+    steps:
+      - slack/notify: 
+          channel: C04KNV5EBKN
+          event: fail
+          template: basic_fail_1
             
 jobs:
   build-frontend:
@@ -65,15 +73,12 @@ jobs:
             npm install
             npm run build
 
-            #exit 1
+            exit 1
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
 
-      - slack/notify: 
-          channel: C04KNV5EBKN
-          event: fail
-          template: basic_fail_1
+      - slacknotify
 
   build-backend:
     docker:
@@ -94,6 +99,11 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
+
+      - slack/notify: 
+          channel: C04KNV5EBKN
+          event: fail
+          template: basic_fail_1
 
   test-frontend:
     docker:
