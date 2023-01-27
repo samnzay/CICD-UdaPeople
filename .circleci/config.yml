@@ -242,7 +242,8 @@ jobs:
           command: |
             # Your code here
             
-            apk add --update tar gzip pip awscli ansible
+            apk add --update tar gzip ansible
+            pip install awscli
 
             #exit 1
       - run:
