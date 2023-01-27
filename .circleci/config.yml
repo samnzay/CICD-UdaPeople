@@ -235,14 +235,14 @@ jobs:
           fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
       
       - attach_workspace: # attach workspace
-          at: ~/project/.circleci/ansible/inventory.txt
+          at: ~/
       
       - run:
           name: Install dependencies
           command: |
             # Your code here
             
-            apk add --update tar gzip awscli ansible
+            apk add --update tar gzip pip awscli ansible
 
             #exit 1
       - run:
