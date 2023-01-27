@@ -191,7 +191,7 @@ jobs:
               --template-file .circleci/files/backend.yml \
               --tags project=cicd-backend \
               --stack-name samnzay-stack-backend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID= backend-${CIRCLE_WORKFLOW_ID:0:7} 
+              --parameter-overrides ID=backend-${CIRCLE_WORKFLOW_ID:0:7} 
               --region us-east-1
 
 
@@ -202,7 +202,7 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --tags project=cicd-frontend \
               --stack-name samnzay-stack-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID= frontend-${CIRCLE_WORKFLOW_ID:0:7}  
+              --parameter-overrides ID=frontend-${CIRCLE_WORKFLOW_ID:0:7}  
               --region us-east-1
 
               #exit 1
