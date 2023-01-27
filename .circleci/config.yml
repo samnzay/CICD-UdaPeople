@@ -268,7 +268,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt install tar gzip pip
-            pip install awscli
+            sudo apt install awscli
 
       - run:
           name: Run migrations
