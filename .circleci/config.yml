@@ -64,7 +64,7 @@ jobs:
             cd frontend
             npm install
             npm run build
-            
+
             #exit 1
       - save_cache:
           paths: [frontend/node_modules]
@@ -488,10 +488,10 @@ jobs:
     executor:
       name: node/default
     steps:
-      - checkout
-      - node/install-packages
-      - run: 
-          command: npm run deploy 
+      #- checkout
+      #- node/install-packages
+      #- run: 
+          #command: npm run deploy 
       - slack/notify: 
           channel: C04KNV5EBKN
           event: fail
