@@ -256,6 +256,8 @@ jobs:
       - destroy-environment: # Here's where you will add some code to rollback on failure      
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+      - slacknotify
+
   run-migrations:
     docker:
       - image: circleci/node:13.8.0 # Docker image here that supports NodeJS
@@ -538,8 +540,8 @@ workflows:
           filters:
             branches:
               only: [master]
-      #- configure-infrastructure:
-          #requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       #- run-migrations:
           #requires: [configure-infrastructure]
       #- deploy-frontend:
