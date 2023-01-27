@@ -95,15 +95,13 @@ jobs:
              cd backend
              npm install
              npm run build
+             exit 1
 
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
 
-      - slack/notify: 
-          channel: C04KNV5EBKN
-          event: fail
-          template: basic_fail_1
+      - slacknotify
 
   test-frontend:
     docker:
@@ -120,6 +118,9 @@ jobs:
             cd frontend
             npm install
             npm run test
+            exit 1
+
+      - slacknotify
             
                 
   test-backend:
@@ -135,9 +136,11 @@ jobs:
             cd backend
             npm install
             npm run test
-            
-            
-            
+            exit 1
+
+      - slacknotify
+
+
   scan-frontend:
     docker:
       - image: circleci/node:13.8.0 # Docker image here
