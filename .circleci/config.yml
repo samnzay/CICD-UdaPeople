@@ -189,9 +189,9 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=cicd-backend \
+              --tags project=udapeople-backend \
               --stack-name samnzay-stack-backend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=backend-${CIRCLE_WORKFLOW_ID:0:7} 
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
               --region us-east-1
 
 
@@ -200,12 +200,12 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=cicd-frontend \
+              --tags project=udapeople-frontend \
               --stack-name samnzay-stack-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=frontend-${CIRCLE_WORKFLOW_ID:0:7}  
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
               --region us-east-1
 
-              #exit 1
+              
       - run:
           name: Add back-end "IP" to ansible inventory
           command: |
