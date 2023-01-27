@@ -221,13 +221,15 @@ jobs:
       - destroy-environment: # Here's where you will add some code to rollback on failure
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+      - slacknotify
+
   configure-infrastructure:
     docker:
       - image: python:3.9.16-alpine3.17 # Docker image here that supports Ansible
     steps:
       - checkout # Checkout code from git
       - add_ssh_keys: # Add ssh keys with fingerprint
-          finger_prints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
+          fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
       
       - attach_workspace: # attach workspace
           at: ~/project/.circleci/ansible/inventory.txt
@@ -528,11 +530,11 @@ workflows:
           requires: [build-backend]
       - scan-frontend:
           requires: [build-frontend]
-      #- deploy-infrastructure:
-          #requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          #filters:
-            #branches:
-              #only: [test-feature-branch]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [test-feature-branch]
       #- configure-infrastructure:
           #requires: [deploy-infrastructure]
       #- run-migrations:
