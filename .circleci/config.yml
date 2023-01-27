@@ -20,9 +20,9 @@ commands:
             # Your code here
 
             echo "Destroying environment: << parameters.workflow_id >> "
-            aws cloudformation delete-stack --stackname samnzay-stack-backend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stackname udapeople-stack-backend-<< parameters.workflow_id >>
             aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
-            aws cloudformation delete-stack --stack-name samnzay-stack-frontend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stack-name udapeople-stack-frontend-<< parameters.workflow_id >>
 
             #exit 1
 
