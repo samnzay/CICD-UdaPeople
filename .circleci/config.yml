@@ -192,7 +192,7 @@ jobs:
               --tags project=udapeople-backend \
               --stack-name udapeople-stack-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
-              --region us-east-1
+              
 
 
       - run:
@@ -203,7 +203,7 @@ jobs:
               --tags project=udapeople-frontend \
               --stack-name udapeople-stack-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
-              --region us-east-1
+              
 
               
       - run:
