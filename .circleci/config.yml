@@ -268,7 +268,7 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install awscli
+            sudo apt-get install awscli curl
 
       - run:
           name: Run migrations
@@ -280,7 +280,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
-            
+
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
