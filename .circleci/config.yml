@@ -20,7 +20,7 @@ commands:
             # Your code here
 
             echo "Destroying environment: << parameters.workflow_id >> "
-            cloudformation delete-stack --stackname samnzay-stack-backend-<< parameters.workflow_id >>
+            aws cloudformation delete-stack --stackname samnzay-stack-backend-<< parameters.workflow_id >>
             aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name samnzay-stack-frontend-<< parameters.workflow_id >>
 
@@ -190,7 +190,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople-backend \
-              --stack-name samnzay-stack-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name udapeople-stack-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
               --region us-east-1
 
@@ -201,7 +201,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople-frontend \
-              --stack-name samnzay-stack-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name udapeople-stack-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
               --region us-east-1
 
