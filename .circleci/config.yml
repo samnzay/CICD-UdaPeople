@@ -317,7 +317,7 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            apt install tar gzip ansible npm
+            yum install -y tar gzip ansible npm
             
       - run:
           name: Get backend url
