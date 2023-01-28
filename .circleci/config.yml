@@ -423,10 +423,11 @@ jobs:
               --output text)  
 
             echo ${BACKEND_IP}
+            
             export "API_URL=http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
 
-            if curl -s ${API_URL}/api/status" | grep "ok"
+            if curl -s "${API_URL}/api/status" | grep "ok"
             then
                 # Change this to 0 after the job fails
               return 0
@@ -439,7 +440,7 @@ jobs:
             # your code here
 
             FRONTEND-URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
-            echo ${URL} 
+            echo ${FRONTEND-URL} 
             if curl -s ${FRONTEND-URL} | grep "Welcome"
             then
                 # Change this to 0 after the job fails
