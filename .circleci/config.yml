@@ -532,20 +532,6 @@ jobs:
                   echo "......Can Not Clean deployments...."
               fi
 
-  deploy:
-    executor:
-      name: node/default
-    steps:
-      #- checkout
-      #- node/install-packages
-      #- run: 
-          #command: npm run deploy 
-      - slack/notify: 
-          channel: C04KNV5EBKN
-          event: fail
-          template: basic_fail_1
-
-
 
 workflows:
   my_cicd_default_workflow:
@@ -573,9 +559,9 @@ workflows:
           requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
-      #- smoke-test:
-          #requires: [deploy-backend, deploy-frontend]
-      #- cloudfront-update:
-          #requires: [smoke-test]
+      - smoke-test:
+          requires: [deploy-backend, deploy-frontend]
+      - cloudfront-update:
+          requires: [smoke-test]
       #- cleanup:
           #requires: [cloudfront-update]
