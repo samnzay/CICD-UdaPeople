@@ -278,9 +278,9 @@ jobs:
             # Your code 
 
             cd backend
-            npm update 
-            npm cache clean --force
-            npm cache clear --force
+            #npm update 
+            #npm cache clean --force
+            #npm cache clear --force
             npm install --no-audit
             npm run build
             
