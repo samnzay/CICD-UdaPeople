@@ -11,6 +11,7 @@ commands:
       # Add parameter here 
       workflow_id: 
         type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
         
     steps:
       - run:
@@ -32,6 +33,7 @@ commands:
       # Add parameter here
       workflow_id:
         type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
           name: Revert migrations
@@ -39,8 +41,8 @@ commands:
           when: on_fail # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = $(curl --insecure  https://kvdb.io/CABr8rm7FqeskeNbCghtvC/cicd-db-migration-<< parameters.workflow_id >>)
-            if(( $SUCCESS==1 )); 
+            SUCCESS=$(curl --insecure  https://kvdb.io/CABr8rm7FqeskeNbCghtvC/cicd-db-migration-<< parameters.workflow_id >>)
+            if (( $SUCCESS==1 )); 
             then
                 cd ~/project/backend
                 npm install
