@@ -403,7 +403,7 @@ jobs:
           name: Install dependencies
           command: |
             # your code here
-            sudo apt install curl tar gzip aws-cli
+            sudo apt install curl tar gzip
       
       - run:
           name: Install awscli
