@@ -442,9 +442,6 @@ jobs:
             API_URL=http://${BACKEND_IP}:3030
             echo "${API_URL}/api/status"
             
-            #export "API_URL=http://${BACKEND_IP}:3030" >> frontend/.env
-            #cat frontend/.env
-
             #if curl -s "${API_URL}/api/status" | grep "ok"
             #then
                 # Change this to 0 after the job fails
