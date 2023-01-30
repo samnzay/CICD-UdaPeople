@@ -570,7 +570,7 @@ jobs:
               # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
               # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
 
-              export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
+              export OldWorkflowID=$(curl --insecure https://kvdb.io/CABr8rm7FqeskeNbCghtvC/old_workflow_id)
 
               echo Old Workflow ID: "${OldWorkflowID}"
               
