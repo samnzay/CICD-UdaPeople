@@ -574,6 +574,9 @@ jobs:
 
               ls
 
+        - attach_workspace:
+            at: ~/
+
 
 workflows:
   my_cicd_default_workflow:
