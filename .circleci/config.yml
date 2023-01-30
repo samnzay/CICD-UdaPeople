@@ -519,11 +519,14 @@ jobs:
         - image: amazon/aws-cli # Docker image here
       steps:
         - checkout # Checkout code from git
+        - attach_workspace:
+            at: ~/
         - run: yum install -y tar gzip
         - run:
             name: Get old stack workflow id
             command: |
               # your code here
+
 
               export OldWorkflowID=$(aws cloudformation \
                       list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
@@ -543,6 +546,7 @@ jobs:
               echo Stack Names: "${STACKS[@]}"
 
               echo OldWorkflowID: "${OldWorkflowID}"
+              ls
               
         - run:
             name: Remove old stacks and files
@@ -566,6 +570,8 @@ jobs:
               else
                   echo "......Can Not Clean deployments...."
               fi
+
+              ls
 
 
 workflows:
