@@ -192,7 +192,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=udapeople-backend \
-              --stack-name udapeople-stack-backend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
               
 
@@ -203,7 +203,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople-frontend \
-              --stack-name udapeople-stack-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
+              --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
               
 
@@ -563,8 +563,8 @@ jobs:
                 # your code here
 
                   aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-                  aws cloudformation delete-stack --stack-name "samnzay-stack-frontend-${OldWorkflowID}"
-                  aws cloudformation delete-stack --stack-name "samnzay-stack-backend-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
 
                   echo "Delete Blue Deployments Confirmed..."
               else
