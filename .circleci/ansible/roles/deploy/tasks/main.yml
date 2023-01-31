@@ -5,8 +5,7 @@
       src: artifact.tar.gz
       dest: .
 
-  - name: "Start The Application"
-    become: true
+  - name: "Start the app"
     shell: |
 
       npm install
