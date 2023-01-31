@@ -220,7 +220,7 @@ jobs:
 
             echo Backend_Public_IP: ${BACKEND_IP}
 
-            echo ${BACKEND_IP} >> .circleci/ansible/inventory.
+            echo ${BACKEND_IP} >> .circleci/ansible/inventory.txt
             
             cat .circleci/ansible/inventory.txt
 
