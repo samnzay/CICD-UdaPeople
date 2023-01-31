@@ -549,8 +549,7 @@ jobs:
       steps:
 
         - checkout # Checkout code from git
-
-        - run: yum install -y tar gzip
+        
         - run:
             name: Install awscli
             command: |
