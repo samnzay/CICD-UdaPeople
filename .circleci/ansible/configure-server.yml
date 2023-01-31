@@ -23,31 +23,13 @@
       apt:
         upgrade: yes
 
-    - name: remove dependencies that are no longer required
-      become: yes
-      apt: 
-        autoremove: yes
-
-    - name: "install dependencies."
-      apt: 
-        name: ["nodejs", "npm"]
-        state: latest
-        update_cache: yes
-
-    - name: "install pm2"
-      become: yes
-      npm: 
-        name: pm2
-        global: yes
-        production: yes
-        state: present
-
     
     - name: "install python for Ansible."
       # Your code
       become: yes
       apt: 
         name: ["python3.6"]
+        raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
         update_cache: yes
 
   # Get the environment variables from CircleCI and add to the EC2 instance
