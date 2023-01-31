@@ -367,23 +367,38 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: python:3.9.16-alpine3.17 # Docker image here that supports Ansible
+      - image: cimg/base:stable # Docker image here that supports Ansible
     steps:
       - checkout # Checkout code from git
+      
+      - run:
+          name: Install AWSCLI
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+  
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+  
+      - run:
+          name: Install Node.js 13
+          command: |
+            curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+            sudo apt install -y nodejs
+
       - add_ssh_keys: # Add ssh keys with fingerprint 
           fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
       
       # attach workspace
       - attach_workspace: # attach workspace
           at: ~/
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-            apk add --update ansible tar gzip nodejs npm
-            /usr/local/bin/python -m pip install --upgrade pip
-            pip install awscli
-
+      
       - run:
           name: Deploy backend
           command: |
@@ -395,6 +410,11 @@ jobs:
             cd ..
             # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+
+            export TYPEORM_MIGRATIONS_DIR=./migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is ------: "
             cat inventory.txt
@@ -408,14 +428,10 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/base:2022.06 # Lightweight Docker image 
+      - image: cimg/base:stable # Lightweight Docker image 
     steps:
       - checkout # Checkout code from git
-      - run:
-          name: Install dependencies
-          command: |
-            # your code here
-            sudo apt install curl tar gzip
+      
       
       - run:
           name: Install awscli
@@ -434,17 +450,8 @@ jobs:
             # Use n version manager to use Node.js v13.8.0
             sudo npm install --global n
             sudo n 13.8.0
+
       
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Get backend url
-          command: |
-            # your code here
-            export BACKEND_IP=$(aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:aws:cloudformation:stack-name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --output text)
       - run:
           name: Backend smoke test.
           command: |
@@ -458,15 +465,14 @@ jobs:
             
             echo ${BACKEND_IP}
             export API_URL=http://${BACKEND_IP}:3030
-            echo "${API_URL}/api/status"
             
-            #if curl -s $API_URL/api/status | grep "ok"
-            #then
+            if curl ${API_URL}/api/status | grep "ok"
+            then
                 # Change this to 0 after the job fails
-              #exit 0
-            #else
-              #exit 1
-            #fi
+              exit 0
+            else
+              exit 1
+            fi
       - run:
           name: Frontend smoke test.
           command: |
@@ -549,7 +555,7 @@ jobs:
       steps:
 
         - checkout # Checkout code from git
-        
+
         - run:
             name: Install awscli
             command: |
