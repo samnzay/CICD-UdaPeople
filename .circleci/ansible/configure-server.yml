@@ -28,7 +28,7 @@
       become: true
       apt: 
         name: nodejs
-        state: got:13.8.0
+        state: present
         update_cache: yes
     
 
