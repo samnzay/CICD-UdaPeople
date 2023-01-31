@@ -17,7 +17,7 @@
       # Your code here
       ansible.builtin.wait_for_connection:
       timeout: 600
-      
+
 
     - name: remove dependencies that are no longer required
       become: yes
@@ -30,9 +30,10 @@
         # Install Node.js LTS version as our base Node.js version
         curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
         sudo apt install -y nodejs
+
         # Use n version manager to use Node.js v13.8.0
-        sudo npm install --global n
-        sudo n 13.8.0
+        sudo npm install --global
+        #sudo n 13.8.0
 
     - name: "install npm"
       apt: 
