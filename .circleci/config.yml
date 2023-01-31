@@ -408,6 +408,12 @@ jobs:
 
       - restore_cache:
           keys: [backend-build]
+
+      - run:
+          name: Install dependencies
+          command: |
+            cd backend
+            npm install
       
       - run:
           name: Deploy backend
@@ -416,18 +422,29 @@ jobs:
             ls
 
             cd backend
-            npm install
+            #npm install
             npm run build
+            #cd ..
+
+            tar -czf artifact.tar.gz dist/* package*
             cd ..
+            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+
+
             # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
+            #tar -C backend -czvf artifact.tar.gz .
 
-            ls
+            #ls
 
-            cp artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/
+            #cp artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/
             
 
-            ls ~/project/.circleci/ansible/roles/deploy/files/
+            #ls ~/project/.circleci/ansible/roles/deploy/files/
+
+            export TYPEORM_MIGRATIONS_DIR=./migrations
+            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+            export TYPEORM_MIGRATIONS=./migrations/*.ts
+            
 
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is ------: "
