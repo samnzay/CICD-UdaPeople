@@ -1,9 +1,18 @@
 ---
-  - name: Artifact extration
-    become: true
-    unarchive: 
+  - name: "Creates backend app directory"
+    file:
+      path: ~/backend-app
+      state: directory
+
+  - name: "Artifact extration"
+    unarchive:
       src: artifact.tar.gz
-      dest: .
+      dest: ~/backend-app
+
+  - name: "Installing Node Dependencies"
+    shell: |
+      cd ~/backend-app
+      npm i
 
   - name: Start The Application
     become: true
