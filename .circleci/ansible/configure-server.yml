@@ -38,14 +38,16 @@
         sudo npm install --global n
         sudo n 13.8.0
 
+    - name: "install npm"
+      apt: 
+        name: npm
+        update_cache: yes
+
     - name: "install pm2"
       become: yes
       npm: 
         name: pm2
         global: yes
-        production: yes
-        state: present
-
     
     - name: "install python for Ansible."
       # Your code

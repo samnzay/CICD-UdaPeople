@@ -16,7 +16,7 @@
 
   - name: "install dependencies."
     apt: 
-      name: ["nodejs", "npm"]
+      name: ["npm"]
       update_cache: yes
 
   - name: "install pm2"
