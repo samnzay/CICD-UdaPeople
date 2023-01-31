@@ -24,6 +24,13 @@
       apt: 
         autoremove: yes
 
+    - name: "install nodejs"
+      become: true
+      apt: 
+        name: nodejs
+        state: 13.8.0
+        update_cache: yes
+
     - name: "install npm"
       apt: 
         name: npm
