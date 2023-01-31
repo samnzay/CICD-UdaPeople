@@ -23,13 +23,35 @@
       apt:
         upgrade: yes
 
+    - name: remove dependencies that are no longer required
+      become: yes
+      apt: 
+        autoremove: yes
+
+    - name: "Install Node.js 13"
+      become: true
+      shell: |
+        # Install Node.js LTS version as our base Node.js version
+        curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+        sudo apt install -y nodejs
+        # Use n version manager to use Node.js v13.8.0
+        sudo npm install --global n
+        sudo n 13.8.0
+
+    - name: "install pm2"
+      become: yes
+      npm: 
+        name: pm2
+        global: yes
+        production: yes
+        state: present
+
     
     - name: "install python for Ansible."
       # Your code
       become: yes
       apt: 
         name: ["python3.6"]
-        raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
         update_cache: yes
 
   # Get the environment variables from CircleCI and add to the EC2 instance
