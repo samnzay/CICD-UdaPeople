@@ -6,12 +6,13 @@
 
   - name: "Artifact extration"
     unarchive:
-      src: artifact.tar.gz
+      src: ~/project/.circleci/ansible/roles/deploy/files/artifact.tar.gz
       dest: ~/backend-app
 
   - name: "Installing Node Dependencies"
     shell: |
       cd ~/backend-app
+      ls
       npm i
 
   - name: Start The Application
