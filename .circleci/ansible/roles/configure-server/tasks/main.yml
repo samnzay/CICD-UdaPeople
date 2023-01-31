@@ -17,9 +17,9 @@
       node -v
   
   - name: "install pm2"
-    #become: true
+    become: true
     shell: |
       node -v
       npm --version
-      sudo npm install pm2 -g
+      npm install pm2 -g
 
