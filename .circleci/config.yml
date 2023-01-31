@@ -425,11 +425,17 @@ jobs:
             npm run build
             
             # Zip the directory
-            tar -czf artifact.tar.gz dist/* package*
-            ls backend/
-            cd ..
-            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
-            ls ~/project/.circleci/ansible/roles/deploy/files
+
+            tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
+
+            
+            #tar -czf artifact.tar.gz dist/* package*
+            #ls backend/
+            #cd ..
+            #cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            #ls ~/project/.circleci/ansible/roles/deploy/files
 
             export TYPEORM_MIGRATIONS_DIR=./migrations
             export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
