@@ -1,6 +1,22 @@
 ---
-  
-  - name: "install dependencies."
+  - name: "Add Node.js from Nodesource"
+    become: true
+    shell: |
+      curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+
+  - name: "install nodejs"
+    become: true
+    apt: 
+      name: nodejs
+      state: present
+      update_cache: yes
+
+  - name: "check node.js Version"
+    #become: true
+    shell: |
+      node -v
+      
+  - name: "install npm"
     apt: 
       name: npm
       update_cache: yes
