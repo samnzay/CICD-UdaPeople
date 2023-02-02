@@ -14,8 +14,8 @@
       ls
       cd ~/dist
       pm2 stop default
-      #pm2 start main.js
-      pm2 start npm -- start
+      pm2 start main.js
+      #pm2 start npm -- start
     register: execute_node
 
   - name: print message
