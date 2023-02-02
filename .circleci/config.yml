@@ -378,7 +378,7 @@ jobs:
     steps:
       - checkout # Checkout code from git
       - add_ssh_keys: # Add ssh keys with fingerprint 
-          fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
+          fingerprints: ["21:5f:82:3c:6b:f7:53:e5:f9:75:8c:96:a3:54:ec:06"]
       
       - run:
           name: Install AWSCLI
@@ -430,7 +430,7 @@ jobs:
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             mv backend/ ~/project/.circleci/ansible/roles/deploy/files/
             mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/artifact.tar.gz
-            
+
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is ------: "
             cat inventory.txt
