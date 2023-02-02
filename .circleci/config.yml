@@ -377,6 +377,8 @@ jobs:
       - image: cimg/base:stable # Docker image here that supports Ansible
     steps:
       - checkout # Checkout code from git
+      - add_ssh_keys: # Add ssh keys with fingerprint 
+          fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
       
       - run:
           name: Install AWSCLI
@@ -398,9 +400,6 @@ jobs:
           command: |
             curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
             sudo apt install -y nodejs
-
-      - add_ssh_keys: # Add ssh keys with fingerprint 
-          fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
       
       # attach workspace
       - attach_workspace: # attach workspace
@@ -431,11 +430,7 @@ jobs:
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             mv backend/ ~/project/.circleci/ansible/roles/deploy/files/
             mv artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files/artifact.tar.gz
-
-            export TYPEORM_MIGRATIONS_DIR=./migrations
-            export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
-            export TYPEORM_MIGRATIONS=./migrations/*.ts
-
+            
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is ------: "
             cat inventory.txt
