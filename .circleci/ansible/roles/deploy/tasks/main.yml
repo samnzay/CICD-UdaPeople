@@ -1,6 +1,7 @@
 ---
 
   - name: "Artifact extration"
+    become: true
     unarchive:
       src: artifact.tar.gz
       dest: .
