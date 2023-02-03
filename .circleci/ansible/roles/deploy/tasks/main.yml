@@ -3,8 +3,11 @@
   - name: "Artifact extration"
     become: true
     unarchive:
-      src: artifact.tar.gz
-      dest: .
+      #src: artifact.tar.gz
+      #dest: .
+      src: /root/project/backend.tar.gz
+      dest: /home/ubuntu/
+      
   - name: "Installing Node Dependencies"
     shell: |
       npm install
