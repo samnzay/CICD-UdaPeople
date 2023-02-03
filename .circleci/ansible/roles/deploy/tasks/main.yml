@@ -13,6 +13,7 @@
       #npm install
 
   - name: Build backend
+    become: true
     ignore_errors: yes
     shell: |
       cd /home/ubuntu/backend
@@ -20,6 +21,7 @@
       npm run build
 
   - name: Stop and delete already running server
+    become: true
     ignore_errors: yes
     shell: |
       pm2 stop backend
@@ -43,6 +45,7 @@
     #register: execute_node
 
   - name: print message
+    become: yes
     debug:
       msg: "{{ execute_node.stdout_lines }}"
 
