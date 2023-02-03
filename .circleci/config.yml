@@ -277,7 +277,7 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/configure-server.yml
       - destroy-environment:
-          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}  
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
   configure-infrastructure-old:
     docker:
