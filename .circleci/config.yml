@@ -377,6 +377,12 @@ jobs:
       - image:  cimg/base:2022.06
     steps:
       - checkout # Checkout code from git
+
+      - attach_workspace:
+          at: ~/
+      - restore_cache:
+          keys: [build-frontend]
+
       - run:
           name: Install awscli
           command: |
@@ -394,8 +400,7 @@ jobs:
             sudo npm install --global n
             sudo n 13.8.0
 
-      - restore_cache:
-          keys: [build-frontend] 
+
       - run:
           name: Get backend url
           command: |
@@ -418,6 +423,11 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ~/frontend/dist
             
       - destroy-environment: # Here's where you will add some code to rollback on failure      
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
