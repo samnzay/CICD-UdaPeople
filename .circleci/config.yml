@@ -340,8 +340,8 @@ jobs:
             # Your code 
 
             cd backend
-            #npm i
-            #npm run build
+            npm i
+            npm run build
             
             # Run and save the migration output
 
