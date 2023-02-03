@@ -568,13 +568,16 @@ jobs:
 
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            #curl -s "${API_URL}/api/status" -v
+            curl -s "${API_URL}/api/status" -v
 
-            if curl -s "${API_URL}/api/status"  | grep "ok"
+            if curl -s "${API_URL}/api/status" -v  | grep "ok"
             then
-                # Change this to 0 after the job fails
+                 
+              echo "backend smoketest failed"
               exit 0
+              
             else
+              echo "Backend smoke test failed. check the issue"
               exit 1
             fi
       - run:
@@ -583,10 +586,10 @@ jobs:
             URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com"
             curl -s ${URL} | grep "Welcome"
 
-      - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      #- destroy-environment:
+          #workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      #- revert-migrations:
+          #workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
   
 
   smoke-test-old:
