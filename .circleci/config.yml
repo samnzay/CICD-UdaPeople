@@ -446,7 +446,7 @@ jobs:
       - add_ssh_keys:
           fingerprints: 
             - "21:5f:82:3c:6b:f7:53:e5:f9:75:8c:96:a3:54:ec:06"
-            
+
       - run:
           name: Install awscli
           command: |
@@ -490,7 +490,9 @@ jobs:
             tar -czf artifact.tar.gz dist/* package*
 
             cd ..
-            cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            #cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv backend/artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
 
       - run:
           name: Deploy backend
