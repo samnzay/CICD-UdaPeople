@@ -124,7 +124,6 @@ jobs:
             npm install
             npm run test
 
-      
       - slacknotify
             
                 
@@ -161,8 +160,9 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
-            
 
+      - slacknotify
+            
   scan-backend:
     docker:
       - image: circleci/node:13.8.0 # Docker image here
@@ -179,7 +179,8 @@ jobs:
             npm audit fix --audit-level=critical --force
             npm audit fix --force
             npm audit --audit-level=critical
-            
+
+      - slacknotify
 
   deploy-infrastructure:
     docker:
@@ -199,8 +200,6 @@ jobs:
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7} 
               
-
-
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -208,10 +207,8 @@ jobs:
               --template-file .circleci/files/frontend.yml \
               --tags project=udapeople \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
-              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}  
-              
+              --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
 
-              
       - run:
           name: Add back-end "IP" to ansible inventory
           command: |
@@ -227,7 +224,6 @@ jobs:
             echo ${BACKEND_IP} >> .circleci/ansible/inventory.txt
             
             cat .circleci/ansible/inventory.txt
-
 
       - persist_to_workspace:
           root: ~/
@@ -264,7 +260,9 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+      - slacknotify
 
   run-migrations:
     docker:
@@ -278,6 +276,7 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip -qq awscliv2.zip
             sudo ./aws/install
+
       - restore_cache:
           keys: [backend-build]
       - run:
@@ -298,6 +297,8 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+      - slacknotify
 
 
 
@@ -330,7 +331,6 @@ jobs:
             sudo npm install --global n
             sudo n 13.8.0
 
-
       - run:
           name: Get backend url
           command: |
@@ -354,16 +354,13 @@ jobs:
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-      #- persist_to_workspace:
-          #root: .
-          #paths:
-            #- ~/frontend/dist
-            
       - destroy-environment: # Here's where you will add some code to rollback on failure      
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+      - slacknotify
 
   deploy-backend:
     docker:
@@ -406,7 +403,6 @@ jobs:
             sudo add-apt-repository --yes --update ppa:ansible/ansible
             sudo apt install ansible -y
 
-      #- create-dotenv-file
       - run:
           name: Install dependencies
           command: |
@@ -421,7 +417,7 @@ jobs:
             tar -czf artifact.tar.gz dist/* package*
 
             cd ..
-            #cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+            
             mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
             mv backend/artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
 
@@ -441,8 +437,9 @@ jobs:
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-  
-  
+      - slacknotify
+
+
   smoke-test:
     docker:
       # Lightweight Docker image
@@ -502,6 +499,8 @@ jobs:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
+      - slacknotify
   
   cloudfront-update:
     docker:
@@ -557,6 +556,8 @@ jobs:
 
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+
+      - slacknotify
 
   cleanup:
       docker:
@@ -627,6 +628,8 @@ jobs:
         - revert-migrations:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
+        - slacknotify
+
 
 workflows:
   my_cicd_default_workflow:
@@ -658,5 +661,5 @@ workflows:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
           requires: [smoke-test]
-      #- cleanup:
-          #requires: [cloudfront-update]
+      - cleanup:
+          requires: [cloudfront-update]
