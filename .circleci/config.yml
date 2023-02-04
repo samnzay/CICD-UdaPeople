@@ -5,22 +5,6 @@ orbs:
   node: circleci/node@4.1
 
 commands:
-  create-dotenv-file:
-    description: Create .env file
-    steps:
-      - run:
-          name: Add env vars to .env file
-          command: |
-            echo ENVIRONMENT=$ENVIRONMENT > "backend/.env"
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
 
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
@@ -261,8 +245,6 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
-      #- attach_workspace:
-          #at: .
       - attach_workspace:
           at: ~/
       - add_ssh_keys:
@@ -278,97 +260,46 @@ jobs:
           name: Configure server
           command: |
             pwd
-            #cat ./.circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
             export ANSIBLE_HOST_KEY_CHECKING=false
-            #ansible-playbook -i ./.circleci/ansible/inventory.txt ./.circleci/ansible/configure-server.yml
             ansible-playbook -i .circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}  
 
-  configure-infrastructure-old:
+  run-migrations:
     docker:
-      - image: python:3.9.16-alpine3.17 # Docker image here that supports Ansible
+      - image: circleci/node:13.8.0
     steps:
-      - checkout # Checkout code from git
-      - add_ssh_keys: # Add ssh keys with fingerprint
-          fingerprints: ["e1:e2:30:0c:61:c4:50:90:a3:6c:23:5a:72:0e:8d:2c"]
-      
-      - attach_workspace: # attach workspace
-          at: ~/
-      
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # Your code here
-            
-            apk add --update tar gzip ansible
-            pip install awscli
-
-            #exit 1
-      - run:
-          name: Configure server
-          command: |
-            # Your code here
-            cd .circleci/ansible
-            ansible-playbook --user=ubuntu -vvvv -i inventory.txt configure-server.yml 
-            
-            #exit 1
-      - destroy-environment: # Here's where you will add some code to rollback on failure      
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
-
-      - slacknotify
-
-  run-migrations:
-    docker:
-      - image: sleavely/node-awscli:14.x # Docker image here that supports NodeJS
-    steps:
-      - checkout # Checkout code from git
+            sudo apt install -y tar gzip curl
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -qq awscliv2.zip
+            sudo ./aws/install
       - restore_cache:
-          keys: 
-            - backend-build
-      - attach_workspace:
-          at: ~/
-
-      #- run:
-          #name: Install dependencies
-          #command: |
-            #sudo apt-get update
-            #sudo apt-get install awscli curl
-
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
-            # Your code 
-
             cd backend
-            npm install
-            npm run migrations > migrations_dump.txt
-            ls
-            cat migrations_dump.txt
-            
+            npm run migrations >> migrations_dump.txt
       - run:
           name: Send migration results to kvdb
           command: |
-            # Your code here
-
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              
-                curl https://kvdb.io/${KVDB_BUCKET}/cicd-db-migration-$\{CIRCLE_WORKFLOW_ID:0:7\}  -d '1'
+              curl -k https://kvdb.io/${KVDB_BUCKET}/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
 
-                echo "DB migration executed successfully"
+              echo "DB migration executed successfully"
             else
                 echo "No migrations are pending"
             fi
-
-            #exit 1
-      # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
-      - revert-migrations:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+
 
   deploy-frontend:
     docker:
@@ -673,7 +604,7 @@ jobs:
               # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
               # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
 
-              export OldWorkflowID=$(curl --insecure https://kvdb.io/CABr8rm7FqeskeNbCghtvC/old_workflow_id)
+              export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
 
               echo Old Workflow ID: "${OldWorkflowID}"
               
@@ -689,8 +620,6 @@ jobs:
               else
                   echo "......Can Not Clean deployments...."
               fi
-
-              ls
 
         - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
