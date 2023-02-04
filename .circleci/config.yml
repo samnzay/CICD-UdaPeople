@@ -344,6 +344,7 @@ jobs:
             cd backend
             npm install
             npm run migrations > migrations_dump.txt
+            ls
             cat migrations_dump.txt
             
       - run:
@@ -436,7 +437,7 @@ jobs:
   deploy-backend:
     docker:
       # Docker image that supports Ansible
-      - image: python:3.7-alpine3.11
+      - image: cimg/base:stable
     steps:
       - checkout
       - restore_cache:
@@ -445,17 +446,35 @@ jobs:
       - add_ssh_keys:
           fingerprints: 
             - "21:5f:82:3c:6b:f7:53:e5:f9:75:8c:96:a3:54:ec:06"
+            
+      - run:
+          name: Install awscli
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+      - run:
+          name: Install Node.js 13
+          command: |
+            # Install Node.js LTS version as our base Node.js version
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+            sudo apt install -y nodejs
+            # Use n version manager to use Node.js v13.8.0
+            sudo npm install --global n
+            sudo n 13.8.0
+
       - attach_workspace:
           at: ~/
-      
+
       - run:
-          name: Install dependencies
+          name: Install Ansible
           command: |
-            apk add --update ansible
-            apk add --no-cache curl
-            apk add --no-cache openssh-client
-            apk add --no-cache --upgrade bash
-            pip install awscli
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+
       #- create-dotenv-file
       - run:
           name: Install dependencies
