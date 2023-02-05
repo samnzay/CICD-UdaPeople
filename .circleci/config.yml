@@ -526,6 +526,7 @@ jobs:
             sudo n 13.8.0
       - run:
           name: Save the old_workflow_id to kvdb.io
+          #working_directory: ~/.circleci/files
           command: |
             # your code here
 
@@ -582,24 +583,17 @@ jobs:
               # Use n version manager to use Node.js v13.8.0
               sudo npm install --global n
               sudo n 13.8.0
-
-        - run:
-            name: Get old stack workflow id
-            command: |
-              # your code here
-
-              export STACKS=($(aws cloudformation list-stacks \
-                --query "StackSummaries[*].StackName" \
-                --stack-status-filter CREATE_COMPLETE \
-                --no-paginate --output text )) 
-
-              echo Stack Names: "${STACKS[@]}"
-
-              echo OldWorkflowID: "${OldWorkflowID}"
-              
+     
         - run:
             name: Fetch Olfworkflow & Delete old stacks and files
             command: |
+              export STACKS=($(aws cloudformation list-stacks \
+                  --query "StackSummaries[*].StackName" \
+                  --stack-status-filter CREATE_COMPLETE \
+                  --no-paginate --output text )) 
+
+              echo Stack Names: "${STACKS[@]}"
+
               # You can use any condition like:
               # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
               # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
@@ -610,7 +604,8 @@ jobs:
               echo Old Workflow ID: "${OldWorkflowID}"
               echo Current workflowId: ${CIRCLE_WORKFLOW_ID:0:7}
               
-              if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+
+              if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
               then
                 # your code here
 
@@ -621,7 +616,11 @@ jobs:
                   echo "Delete Blue Deployments Confirmed..."
               else
                   echo "......Can Not Clean deployments...."
+                  
               fi
+
+
+              
 
         - destroy-environment:
             workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
