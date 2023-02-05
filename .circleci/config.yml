@@ -615,7 +615,7 @@ jobs:
 
                   echo "Clean Deployments Confirmed..."
               else
-                  echo "......Can Not Clean deployments...."
+                  echo "......Can Not Clean deployments..."
                   
               fi
 
