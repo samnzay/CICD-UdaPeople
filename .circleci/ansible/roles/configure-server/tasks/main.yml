@@ -1,28 +1,52 @@
 ---
-  - name: "update apt packages"
-    become: true
-    apt: 
-      update_cache: yes
+  #- name: "Add Node.js from Nodesource"
+    #become: true
+    #shell: |
+      #curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
 
-  - name: "upgrade packages"
+  #- name: "install nodejs"
+    #become: true
+    #apt: 
+      #name: nodejs
+      #state: present
+      #update_cache: yes
+
+  #- name: "check node.js Version"
+    #become: true
+    #shell: |
+      #node -v
+  
+  #- name: "install pm2"
+    #become: true
+    #shell: |
+      #node -v
+      #npm --version
+      #npm install pm2 -g
+
+  ###################
+
+  - name: "Update apt packages"
     become: true
     apt:
-      upgrade: yes
-
-  - name: remove dependencies that are no longer required
-    become: true
-    apt: 
-      autoremove: yes
-
-  - name: "install dependencies."
-    apt: 
-      name: ["nodejs", "npm"]
       update_cache: yes
 
-  - name: "install pm2"
+  - name: "Remove dependencies that are no longer required"
     become: true
-    npm: 
+    apt:
+      autoremove: yes
+
+  - name: "Install npm and nodejs"
+    become: true
+    apt:
+      name: ["npm", "nodejs"]
+      state: latest
+      update_cache: yes
+
+  - name: "Install pm2"
+    become: true
+    npm:
       name: pm2
       global: yes
       production: yes
       state: present
+
