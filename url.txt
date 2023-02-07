@@ -1,3 +1,5 @@
 URL01: https://github.com/samnzay/CICD-UdaPeople
 
-URL02: http://udapeople-5659346.s3-website-us-east-1.amazonaws.com
+URL02: http://udapeople-5e07d5d.s3-website-us-east-1.amazonaws.com/
+
+
