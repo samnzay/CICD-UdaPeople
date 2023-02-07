@@ -309,10 +309,11 @@ jobs:
     steps:
       - checkout # Checkout code from git
 
-      - attach_workspace:
-          at: ~/
       - restore_cache:
           keys: [build-frontend]
+
+      - attach_workspace:
+          at: ~/
 
       - run:
           name: Install awscli
@@ -331,8 +332,7 @@ jobs:
             sudo npm install --global n
             sudo n 13.8.0
             
-      - attach_workspace:
-          at: ~/
+      
 
       - run:
           name: Get backend url
@@ -342,10 +342,10 @@ jobs:
                 --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                 --query 'Reservations[*].Instances[*].PublicIpAddress')
 
-            #export API_URL= "http://${BACKEND_PUBLIC_IP}:3030"
+            export API_URL=http://${BACKEND_PUBLIC_IP}:3030
             #echo "API_URL=${API_URL}"
             echo ENVIRONMENT=production >> "frontend/.env"
-            echo API_URL="http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
+            echo API_URL=http://${BACKEND_PUBLIC_IP}:3030 >> frontend/.env
             
             cat frontend/.env
       - run:
