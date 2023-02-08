@@ -41,13 +41,15 @@ commands:
           when: on_fail # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure https://kvdb.io/CABr8rm7FqeskeNbCghtvC/db_migration_<<parameters.workflow_id>>)
+            #SUCCESS=$(curl --insecure https://kvdb.io/CABr8rm7FqeskeNbCghtvC/db_migration_<<parameters.workflow_id>>)
+            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/the_old_workflow_id)
+            
             echo $SUCCESS
-            if (( $SUCCESS == 1 ));
+            if (( $SUCCESS == 11 ));
             then
                 cd ~/project/backend
                 npm install
-                npm run migrations:revert
+                npm run migration:revert
             fi
 
   slacknotify:
