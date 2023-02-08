@@ -47,10 +47,6 @@ commands:
               cd ~/project/backend
               npm install
               npm run migration:revert
-              
-              echo "revert migrations succeed"
-            else
-              echo "revert migrations failed"
             fi
 
   slacknotify:
