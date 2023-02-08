@@ -41,7 +41,7 @@ commands:
           when: on_fail # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/db_migration_<<parameters.workflow_id>>)
+            SUCCESS=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/db-migration-<<parameters.workflow_id>>)
             echo $SUCCESS
             if (( $SUCCESS==1 ));
             then
@@ -285,7 +285,7 @@ jobs:
           command: |
             if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
             then
-              curl https://kvdb.io/${KVDB_BUCKET}/db_migration_${CIRCLE_WORKFLOW_ID:0:7} -d "1"
+              curl https://kvdb.io/${KVDB_BUCKET}/db-migration-${CIRCLE_WORKFLOW_ID:0:7} -d "1"
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -470,7 +470,7 @@ jobs:
             if curl -s "${API_URL}/api/status" -v  | grep "ok"
             then
                  
-              echo "backend smoketest succeed"
+              #echo "backend smoketest succeed"
               exit 0
               
             else
@@ -484,8 +484,8 @@ jobs:
             echo ${URL} 
             if curl -s ${URL} | grep "Welcome"
             then
-                # Change this to 0 after the job fails
-              echo "frontend smoke test success"
+              
+              #echo "frontend smoke test success"
               exit 1
             else
               echo "frontend smoke test failed"
@@ -590,11 +590,6 @@ jobs:
                   --no-paginate --output text )) 
 
               echo Stack Names: "${STACKS[@]}"
-
-              # You can use any condition like:
-              # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-              # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
-              # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
 
               export OldWorkflowID=$(curl --insecure https://kvdb.io/${KVDB_BUCKET}/the_old_workflow_id)
 
