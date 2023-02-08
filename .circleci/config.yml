@@ -26,7 +26,6 @@ commands:
             aws s3 rm s3://udapeople-<< parameters.workflow_id >> --recursive
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflow_id >>
 
-            #exit 1
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -42,14 +41,12 @@ commands:
           when: on_fail # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/cicd-db-migration-<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.workflow_id >>)
             if (( $SUCCESS == 1 )); 
             then
                 cd ~/project/backend
                 npm install
-                #  Add revert code here. You can find this in the Getting Started section.
                 npm run migration:revert
-                #exit 1
                 echo "revert migrations succeed"
             else
               echo "revert migrations failed"
@@ -494,7 +491,7 @@ jobs:
             then
                 # Change this to 0 after the job fails
               echo "frontend smoke test success"
-              exit 0
+              exit 1
             else
               echo "frontend smoke test failed"
               exit 1
