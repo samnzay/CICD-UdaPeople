@@ -47,7 +47,7 @@ commands:
             then
               cd ~/project/backend
               npm install
-              npm run migration:revert
+              npm run migrations:revert
             fi
 
   slacknotify:
@@ -287,8 +287,6 @@ jobs:
               curl -k https://kvdb.io/CABr8rm7FqeskeNbCghtvC/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
 
               echo "DB migration executed successfully"
-            else
-                echo "No migrations are pending"
             fi
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
