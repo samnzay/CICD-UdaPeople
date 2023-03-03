@@ -92,14 +92,31 @@ Before you submit your project, please check your work against the project rubri
 
 7. Successful rollback after a failed smoke test. [SCREENSHOT07] 
 
-![Successful Rollack On Job Failure](screenshoots/SCREENSHOT07.png)
+![Successful Rollack](screenshoots/SCREENSHOT07.png)
 
 
 8. Successful promotion job. [SCREENSHOT08]
-![Promote to Production Succeed](screenshoots/SCREENSHOT08.png)
 
-9. Successful cleanup job (Destroy Old Infrastructure on New Infra. Deployment Success). [SCREENSHOT09]
+![Promotion job Succeed](screenshoots/SCREENSHOT08.png)
+
+
+
+9. Successful cleanup job (Destroy Old Infra. on New Infra. Deployment Success) [SCREENSHOT09]
+
 ![Clean-Up Success](screenshoots/SCREENSHOT09.png)
+
+
+
+10. Only deploy on pushed to `master` branch. [SCREENSHOT10]
+
+![Deploy OnlyMaster](screenshoots/SCREENSHOT10.png)
+
+11. Provide a screenshot of a graph of your EC2 instance including available memory, available disk space, and CPU usage. [SCREENSHOT11]
+
+![cpu usage](screenshoots/SCREENSHOT11_CPU_USAGE.png)
+![disk usage](screenshoots/SCREENSHOT11_DISK_USAGE.png)
+![memmory usage](screenshoots/SCREENSHOT11_MEMORY_USAGE.png)
+
 
 
 ### License
