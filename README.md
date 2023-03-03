@@ -111,6 +111,8 @@ Before you submit your project, please check your work against the project rubri
 
 ![Deploy OnlyMaster](screenshoots/SCREENSHOT10.png)
 
+
+
 11. Provide a screenshot of a graph of your EC2 instance including available memory, available disk space, and CPU usage. [SCREENSHOT11]
 
 CPU USAGE MONITORING
@@ -123,7 +125,10 @@ MEMORY USAGE MONITORING
 ![Memory usage](screenshoots/SCREENSHOT11_MEMORY_USAGE.png)
 
 
+
+
 12. Provide a screenshot of an alert that was sent by Prometheus. [SCREENSHOT12]
+
 ![Instance Down](screenshoots/SCREENSHOT12_INSTANCE_DOWN.png)
 
 ALERT SENT BY PROMETHEUS
