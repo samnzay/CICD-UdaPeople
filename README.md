@@ -54,7 +54,7 @@ Before you submit your project, please check your work against the project rubri
 - [Ansible](https://www.ansible.com/) - Configuration management tool
 - [Prometheus](https://prometheus.io/) - Monitoring tool
 
-## AUTODEPLOY PIPELINE RESULTS
+## AUTO-DEPLOY PIPELINE RESULTS
 1. Job failed because of compile errors. [SCREENSHOT01]
 
 ![Backend-Build](screenshoots/SCREENSHOT01.png)
@@ -93,6 +93,14 @@ Before you submit your project, please check your work against the project rubri
 7. Successful rollback after a failed smoke test. [SCREENSHOT07] 
 
 ![Successful Rollack On Job Failure](screenshoots/SCREENSHOT07.png)
+
+
+8. Successful promotion job. [SCREENSHOT08]
+![Promote to Production Succeed](screenshoots/SCREENSHOT08.png)
+
+9. Successful cleanup job (Destroy Old Infrastructure on New Infra. Deployment Success). [SCREENSHOT09]
+![Clean-Up Success](screenshoots/SCREENSHOT09.png)
+
 
 ### License
 
