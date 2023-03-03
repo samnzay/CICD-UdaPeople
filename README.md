@@ -54,10 +54,18 @@ Before you submit your project, please check your work against the project rubri
 - [Ansible](https://www.ansible.com/) - Configuration management tool
 - [Prometheus](https://prometheus.io/) - Monitoring tool
 
-### AUTODEPLOY PIPELINE RESULTS
+## AUTODEPLOY PIPELINE RESULTS
 1. Job failed because of compile errors. [SCREENSHOT01]
 
 ![Backend-Build](screenshoots/SCREENSHOT01.png)
+
+1. Job failed because of unit tests. [SCREENSHOT02]
+
+![Backend-Test](screenshoots/SCREENSHOT02.png)
+
+1. Job that failed because of vulnerable packages. [SCREENSHOT03]
+
+![Backend-Scan](screenshoots/SCREENSHOT03.png)
 
 
 ### License
