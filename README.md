@@ -59,14 +59,40 @@ Before you submit your project, please check your work against the project rubri
 
 ![Backend-Build](screenshoots/SCREENSHOT01.png)
 
-1. Job failed because of unit tests. [SCREENSHOT02]
+
+
+2. Job failed because of unit tests. [SCREENSHOT02]
 
 ![Backend-Test](screenshoots/SCREENSHOT02.png)
 
-1. Job that failed because of vulnerable packages. [SCREENSHOT03]
+
+
+3. Job that failed because of vulnerable packages. [SCREENSHOT03]
 
 ![Backend-Scan](screenshoots/SCREENSHOT03.png)
 
+
+
+4. An alert from one of your failed builds. [SCREENSHOT04]
+
+![Failed Job Alert](screenshoots/SCREENSHOT04.png)
+
+
+
+5. Appropriate job failure for infrastructure creation. [SCREENSHOT05]
+
+![Infrastructure-Job Appropriate Failure](screenshoots/SCREENSHOT05.png)
+
+
+6. Appropriate job failure for the smoke test job. [SCREENSHOT06]
+
+![Failed Job Alert](screenshoots/SCREENSHOT06.png)
+
+
+
+7. Successful rollback after a failed smoke test. [SCREENSHOT07] 
+
+![Successful Rollack On Job Failure](screenshoots/SCREENSHOT07.png)
 
 ### License
 
