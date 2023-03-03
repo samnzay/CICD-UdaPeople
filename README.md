@@ -134,6 +134,20 @@ MEMORY USAGE MONITORING
 ALERT SENT BY PROMETHEUS
 ![Alert](screenshoots/SCREENSHOT12.png)
 
+#### URLS
+
+13. Public URL for your CloudFront distribution (aka, your blue production front-end) [URL03]
+![Cloudfront URL](screenshoots/URL03_SCREENSHOT.png)
+
+14. Public URLs to deployed application back-end in EC2 [URL04]
+![Backend Status](screenshoots/URL04_SCREENSHOT.png)
+
+15. Public URL to your Prometheus Server, To List Target Instances [URL05]
+![Target Instances](screenshoots/URL05_SCREENSHOT.png)
+
+INSTANCE STATUS IS DOWN
+![Target Instance Down](screenshoots/URL05_SCREENSHOT_DOWN.png)
+
 ### License
 
 [License](LICENSE.md)
